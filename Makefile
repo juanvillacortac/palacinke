@@ -6,7 +6,7 @@ MODULE=github.com/juandroid007/palacinke
 
 MAIN_PKG=$(MODULE)/cmd/palacinke
 
-OUTPUT_DIR=./build
+OUTPUT_DIR=.
 
 ifeq ($(GOOS), windows)
 	EXE := .exe
