@@ -1,6 +1,9 @@
 package repl
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 type Command struct {
 	keyword string
@@ -27,9 +30,9 @@ var (
 	}
 )
 
-func printHelp() {
-	fmt.Println("Commands availables for the prompt:")
+func printHelp(out io.Writer) {
+	fmt.Fprintln(out, "Commands availables for the prompt:")
 	for _, c := range commands {
-		fmt.Printf("  :%-4s - %s\n", c.keyword, c.help)
+		fmt.Fprintf(out, "  :%-4s - %s\n", c.keyword, c.help)
 	}
 }

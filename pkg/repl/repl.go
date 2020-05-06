@@ -28,11 +28,11 @@ func Start(in io.Reader, out io.Writer) {
 			command := strings.TrimPrefix(line, ":")
 			switch command {
 			case HELP.keyword:
-				printHelp()
+				printHelp(out)
 			case EXIT.keyword:
 				return
 			default:
-				fmt.Printf("Unknown command, type :%s for help\n", HELP.keyword)
+				fmt.Fprintf(out, "Unknown command, type :%s for help\n", HELP.keyword)
 			}
 			continue
 		}
@@ -40,7 +40,7 @@ func Start(in io.Reader, out io.Writer) {
 		lex := lexer.New(line)
 
 		for tok := lex.NextToken(); tok.Type != token.EOF; tok = lex.NextToken() {
-			fmt.Printf("%+v\n", tok)
+			fmt.Fprintf(out, "%+v\n", tok)
 		}
 	}
 }
