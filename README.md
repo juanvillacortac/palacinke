@@ -15,7 +15,7 @@
    | |                \_______/      | |
 ```
 
-Palacinke, a toy programming language
+Palacinke (palatschinken in german, palačinke in serbian, bosnian, croatian and slovene), a toy programming language
 
 ## Why the name?
 
