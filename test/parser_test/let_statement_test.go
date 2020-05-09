@@ -17,11 +17,13 @@ let foobar = 838383;`
 	p := parser.New(l)
 	program := p.ParseProgram()
 
+	checkParserErrors(t, p)
+
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}
 	if len(program.Statements) != 3 {
-		t.Fatalf("program.Statements does not contain 3 statements.\n\t-> Got: %d",
+		t.Fatalf("program.Statements does not contain 3 statements. Got: %d",
 			len(program.Statements))
 	}
 
@@ -43,23 +45,23 @@ let foobar = 838383;`
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'.\n\t-> Got: %q", s.TokenLiteral())
+		t.Errorf("s.TokenLiteral not 'let'. Got: %q", s.TokenLiteral())
 		return false
 	}
 
 	letStmt, ok := s.(*ast.LetStatement)
 	if !ok {
-		t.Errorf("s not *ast.LetStatement.\n\t-> Got: %T", s)
+		t.Errorf("s not *ast.LetStatement. Got: %T", s)
 		return false
 	}
 
 	if letStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s'.\n\t-> Got: %s", name, letStmt.Name.Value)
+		t.Errorf("letStmt.Name.Value not '%s'. Got: %s", name, letStmt.Name.Value)
 		return false
 	}
 
 	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("s.Name not '%s'.\n\t-> Got: %s", name, letStmt.Name)
+		t.Errorf("s.Name not '%s'. Got: %s", name, letStmt.Name)
 		return false
 	}
 

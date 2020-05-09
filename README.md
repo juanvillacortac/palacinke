@@ -26,5 +26,6 @@ dishes. And that's it.
 
 ## TODO
 * Parser
+* Interpreter
 * This readme
 * Everything 😅
