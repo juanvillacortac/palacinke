@@ -19,7 +19,7 @@ var (
 		keyword: "?",
 		help:    "Print this help",
 	}
-	LEX  = Command{
+	LEX = Command{
 		keyword: "l",
 		help:    `Print the code AST in JSON format, usage ":l <EXPRESSION>"`,
 	}

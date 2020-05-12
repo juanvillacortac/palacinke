@@ -28,12 +28,12 @@ func Start(in io.Reader, out io.Writer) {
 		if strings.HasPrefix(line, ":") {
 			command := strings.TrimPrefix(line, ":")
 
-			if strings.HasPrefix(line, ":" + LEX.keyword) {
-				if !strings.HasPrefix(line, ":" + LEX.keyword + " ") {
+			if strings.HasPrefix(line, ":"+LEX.keyword) {
+				if !strings.HasPrefix(line, ":"+LEX.keyword+" ") {
 					fmt.Fprintf(out, "Usage error, type :%s for help\n", HELP.keyword)
 					continue
 				}
-				expr := strings.TrimPrefix(line, ":" + LEX.keyword + " ")
+				expr := strings.TrimPrefix(line, ":"+LEX.keyword+" ")
 
 				lex := lexer.New(expr)
 				p := parser.New(lex)
