@@ -25,7 +25,8 @@ pay tribute to her is by naming language as one of her favorite childhood food
 dishes. And that's it.
 
 ## TODO
-* Parser
-* Interpreter
-* This readme
-* Everything 😅
+- [X] Lexer
+- [X] Parser
+- [] Interpreter
+- [] This readme
+- [] Everything 😅

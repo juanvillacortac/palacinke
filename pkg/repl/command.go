@@ -19,6 +19,10 @@ var (
 		keyword: "?",
 		help:    "Print this help",
 	}
+	LEX  = Command{
+		keyword: "l",
+		help:    `Print the code AST in JSON format, usage ":l <EXPRESSION>"`,
+	}
 	EXIT = Command{
 		keyword: "q",
 		help:    "Quit of this REPL",
@@ -26,6 +30,7 @@ var (
 
 	commands = []Command{
 		HELP,
+		LEX,
 		EXIT,
 	}
 )

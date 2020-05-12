@@ -26,6 +26,7 @@ var precedences = map[token.TokenType]int{
 	token.MINUS:    SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.LPAREN:   CALL,
 }
 
 type (
@@ -91,6 +92,12 @@ func (p *Parser) registerPrefixesAndInfixes() {
 
 	// If
 	p.registerPrefix(token.IF, p.parseIfExpression)
+
+	// Function literals
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
+
+	// Call expressions
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
 }
 
 func (p *Parser) Errors() []string {

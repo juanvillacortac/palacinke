@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 
 	"github.com/juandroid007/palacinke/pkg/token"
@@ -22,10 +23,23 @@ type Expression interface {
 	expressionNode()
 }
 
+func Json(node Node) ([]byte, error) {
+	var out bytes.Buffer
+	str, err := json.Marshal(node)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Indent(&out, str, "", "\t")
+	if err != nil {
+		return nil, err
+	}
+	return out.Bytes(), nil
+}
+
 /***** Root statement ********************************************************/
 
 type Program struct {
-	Statements []Statement
+	Statements []Statement `json:"statements"`
 }
 
 func (p *Program) TokenLiteral() string {
@@ -48,8 +62,8 @@ func (p *Program) String() string {
 /***** Identifier ************************************************************/
 
 type Identifier struct {
-	Token token.Token // the token.IDENT
-	Value string
+	Token token.Token `json:"token"` // the token.IDENT
+	Value string      `json:"value"`
 }
 
 func (i *Identifier) expressionNode() {}
@@ -61,9 +75,9 @@ func (i *Identifier) String() string { return i.Value }
 /***** Let statement *********************************************************/
 
 type LetStatement struct {
-	Token token.Token // the token.LET token
-	Name  *Identifier
-	Value Expression
+	Token token.Token `json:"token"` // the token.LET token
+	Name  *Identifier `json:"name"`
+	Value Expression  `json:"value"`
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -89,8 +103,8 @@ func (ls *LetStatement) String() string {
 /***** Return statement ******************************************************/
 
 type ReturnStatement struct {
-	Token       token.Token // the 'return' token
-	ReturnValue Expression
+	Token       token.Token `json:"token"` // the 'return' token
+	ReturnValue Expression  `json:"return_value"`
 }
 
 func (rs *ReturnStatement) statementNode() {}
@@ -114,8 +128,8 @@ func (rs *ReturnStatement) String() string {
 /***** Expression statement **************************************************/
 
 type ExpressionStatement struct {
-	Token      token.Token
-	Expression Expression
+	Token      token.Token `json:"token"`
+	Expression Expression  `json:"expression"`
 }
 
 func (es *ExpressionStatement) statementNode() {}
@@ -133,8 +147,8 @@ func (es *ExpressionStatement) String() string {
 /***** Integer literal *******************************************************/
 
 type IntegerLiteral struct {
-	Token token.Token
-	Value int64
+	Token token.Token `json:"token"`
+	Value int64       `json:"value"`
 }
 
 func (il *IntegerLiteral) expressionNode() {}
@@ -146,9 +160,9 @@ func (il *IntegerLiteral) String() string { return il.Token.Literal }
 /***** Prefix expression *****************************************************/
 
 type PrefixExpression struct {
-	Token    token.Token // The prefix token, like ! or -
-	Operator string
-	Right    Expression
+	Token    token.Token `json:"token"` // The prefix token, like ! or -
+	Operator string      `json:"operator"`
+	Right    Expression  `json:"right"`
 }
 
 func (pe *PrefixExpression) expressionNode() {}
@@ -169,10 +183,10 @@ func (pe *PrefixExpression) String() string {
 /***** Infix expression ******************************************************/
 
 type InfixExpression struct {
-	Token    token.Token // The operator token, like +, -, * or /
-	Left     Expression
-	Operator string
-	Right    Expression
+	Token    token.Token `json:"token"` // The operator token, like +, -, * or /
+	Left     Expression  `json:"left"`
+	Operator string      `json:"operator"`
+	Right    Expression  `json:"right"`
 }
 
 func (oe *InfixExpression) expressionNode() {}
@@ -194,8 +208,8 @@ func (oe *InfixExpression) String() string {
 /***** Boolean ***************************************************************/
 
 type Boolean struct {
-	Token token.Token
-	Value bool
+	Token token.Token `json:"token"`
+	Value bool        `json:"value"`
 }
 
 func (b *Boolean) expressionNode() {}
@@ -207,8 +221,8 @@ func (b *Boolean) String() string { return b.Token.Literal }
 /***** Block statement *******************************************************/
 
 type BlockStatement struct {
-	Token      token.Token // the { token
-	Statements []Statement
+	Token      token.Token `json:"token"` // the { token
+	Statements []Statement `json:"statements"`
 }
 
 func (bs *BlockStatement) statementNode() {}
@@ -228,10 +242,10 @@ func (bs *BlockStatement) String() string {
 /***** If expression *********************************************************/
 
 type IfExpression struct {
-	Token       token.Token // The 'if' token
-	Condition   Expression
-	Consequence *BlockStatement
-	Alternative *BlockStatement
+	Token       token.Token     `json:"token"` // The 'if' token
+	Condition   Expression      `json:"condition"`
+	Consequence *BlockStatement `json:"consequence"`
+	Alternative *BlockStatement `json:"alternative"`
 }
 
 func (ie *IfExpression) expressionNode() {}
@@ -257,9 +271,9 @@ func (ie *IfExpression) String() string {
 /***** Function literal ******************************************************/
 
 type FunctionLiteral struct {
-	Token token.Token // The 'fn' token
-	Parameters []*Identifier
-	Body *BlockStatement
+	Token      token.Token     `json:"token"` // The 'fn' token
+	Parameters []*Identifier   `json:"parameters"`
+	Body       *BlockStatement `json:"body"`
 }
 
 func (fl *FunctionLiteral) expressionNode() {}
@@ -279,6 +293,34 @@ func (fl *FunctionLiteral) String() string {
 	out.WriteString(strings.Join(params, ", "))
 	out.WriteString(") ")
 	out.WriteString(fl.Body.String())
+
+	return out.String()
+}
+
+/***** Call expression *******************************************************/
+
+type CallExpression struct {
+	Token     token.Token  `json:"token"`    // The '(' token
+	Function  Expression   `json:"function"` // Identifier/FunctionLiteral
+	Arguments []Expression `json:"arguments"`
+}
+
+func (ce *CallExpression) expressionNode() {}
+
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+
+func (ce *CallExpression) String() string {
+	var out bytes.Buffer
+
+	args := []string{}
+	for _, arg := range ce.Arguments {
+		args = append(args, arg.String())
+	}
+
+	out.WriteString(ce.Function.String())
+	out.WriteString("(")
+	out.WriteString(strings.Join(args, ", "))
+	out.WriteString(")")
 
 	return out.String()
 }

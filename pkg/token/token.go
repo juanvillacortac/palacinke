@@ -3,8 +3,8 @@ package token
 type TokenType string
 
 type Token struct {
-	Type    TokenType
-	Literal string
+	Type    TokenType `json:"type"`
+	Literal string    `json:"literal"`
 }
 
 const (

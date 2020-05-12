@@ -23,7 +23,7 @@ func TestIfExpression(t *testing.T) {
 	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
 		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. Got: %T",
-		program.Statements[0])
+			program.Statements[0])
 	}
 
 	exp, ok := stmt.Expression.(*ast.IfExpression)

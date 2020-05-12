@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/juandroid007/palacinke/pkg/ast"
 	"github.com/juandroid007/palacinke/pkg/lexer"
 	"github.com/juandroid007/palacinke/pkg/parser"
 )
@@ -26,6 +27,27 @@ func Start(in io.Reader, out io.Writer) {
 
 		if strings.HasPrefix(line, ":") {
 			command := strings.TrimPrefix(line, ":")
+
+			if strings.HasPrefix(line, ":" + LEX.keyword) {
+				if !strings.HasPrefix(line, ":" + LEX.keyword + " ") {
+					fmt.Fprintf(out, "Usage error, type :%s for help\n", HELP.keyword)
+					continue
+				}
+				expr := strings.TrimPrefix(line, ":" + LEX.keyword + " ")
+
+				lex := lexer.New(expr)
+				p := parser.New(lex)
+				program := p.ParseProgram()
+				if len(p.Errors()) != 0 {
+					printParserErrors(out, p.Errors())
+					continue
+				}
+				str, _ := ast.Json(program)
+				io.WriteString(out, string(str))
+				io.WriteString(out, "\n")
+				continue
+			}
+
 			switch command {
 			case HELP.keyword:
 				printHelp(out)
