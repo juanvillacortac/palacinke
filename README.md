@@ -27,6 +27,6 @@ dishes. And that's it.
 ## TODO
 - [X] Lexer
 - [X] Parser
-- [] Interpreter
-- [] This readme
-- [] Everything 😅
+- [ ] Interpreter
+- [ ] This readme
+- [ ] Everything 😅
