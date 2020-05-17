@@ -1,21 +1,9 @@
 # 🥞 Palacinke lang 🥞
 
-```
-               _____________
-              /    ___      \
-             ||    \__\     ||
-             ||      _      ||
-             |\     / \     /|
-             \ \___/ ^ \___/ /       ,_,
-  | | |      \\____/_^_\____//_     /  \\
-  | | |    __\\____/_^_\____// \   |    ||
-  \   /   /   \____/_^_\____/ \ \   \  //
-   | |   //                   , /    | |
-   | |   \\___________   ____  /     | |
-   | |                \_______/      | |
-```
+![Palačinke](doc/palacinke.jpg)
 
-Palacinke (*palatschinken* in german, *palačinke* in serbian, bosnian, croatian and slovene), a toy programming language
+Palacinke (*palatschinken* in german, *palačinke* in serbian, bosnian, croatian
+and slovene), a toy programming language.
 
 ## Why the name?
 
