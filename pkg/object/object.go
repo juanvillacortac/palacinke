@@ -22,7 +22,7 @@ type Error struct {
 }
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
-func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
+func (e *Error) Inspect() string  { return "-> Evaluation error:\n\t-> " + e.Message }
 
 type Integer struct {
 	Value int64

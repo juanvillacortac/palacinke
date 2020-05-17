@@ -96,7 +96,7 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return newError("unknown operator: %s%s", operator, right.Type())
+		return newError("Unknown operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -112,9 +112,9 @@ func evalInfixExpression(
 	case operator == "!=":
 		return booleanInstances[left != right]
 	case left.Type() != right.Type():
-		return newError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+		return newError("Type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	default:
-		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 

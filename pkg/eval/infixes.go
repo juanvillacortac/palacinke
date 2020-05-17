@@ -40,6 +40,6 @@ func evalIntegerInfixExpression(
 	case ">=":
 		return booleanInstances[leftVal >= rightVal]
 	default:
-		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }

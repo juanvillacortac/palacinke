@@ -13,27 +13,27 @@ func TestErrorHandling(t *testing.T) {
 	}{
 		{
 			"5 + true;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"Type mismatch: INTEGER + BOOLEAN",
 		},
 		{
 			"5 + true; 5;",
-			"type mismatch: INTEGER + BOOLEAN",
+			"Type mismatch: INTEGER + BOOLEAN",
 		},
 		{
 			"-true",
-			"unknown operator: -BOOLEAN",
+			"Unknown operator: -BOOLEAN",
 		},
 		{
 			"true + false;",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"Unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			"5; true + false; 5",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"Unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			"if (10 > 1) { true + false; }",
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"Unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{
 			`
@@ -44,7 +44,11 @@ func TestErrorHandling(t *testing.T) {
 				return 1;
 			}
 			`,
-			"unknown operator: BOOLEAN + BOOLEAN",
+			"Unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"foobar",
+			"Identifier not found: foobar",
 		},
 	}
 
