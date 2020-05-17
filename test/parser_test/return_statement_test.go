@@ -14,7 +14,7 @@ func TestReturnStatements(t *testing.T) {
 		expectedValue interface{}
 	}{
 		{"return 5;", 5},
-		{"let x = 10 return false;", true},
+		{"return false;", false},
 		{"return foobar;", "foobar"},
 	}
 

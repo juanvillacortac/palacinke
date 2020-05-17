@@ -9,12 +9,14 @@ import (
 const (
 	_ int = iota
 	LOWEST
-	EQUALS      // ==
-	LESSGREATER // > or <
-	SUM         // +
-	PRODUCT     // *
-	PREFIX      // -X or !X
-	CALL        // foobar(x)
+	EQUALS            // ==
+	LESSGREATEREQUALS // >= or <=
+	LESSGREATER       // > or <
+	SUM               // +
+	PRODUCT           // *
+	POW               // ^
+	PREFIX            // -X or !X
+	CALL              // foobar(x)
 )
 
 var precedences = map[token.TokenType]int{
@@ -22,10 +24,13 @@ var precedences = map[token.TokenType]int{
 	token.NOT_EQ:   EQUALS,
 	token.LT:       LESSGREATER,
 	token.GT:       LESSGREATER,
+	token.LEQT:     LESSGREATEREQUALS,
+	token.GEQT:     LESSGREATEREQUALS,
 	token.PLUS:     SUM,
 	token.MINUS:    SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.POW:      POW,
 	token.LPAREN:   CALL,
 }
 
@@ -78,10 +83,13 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+	p.registerInfix(token.POW, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.LEQT, p.parseInfixExpression)
+	p.registerInfix(token.GEQT, p.parseInfixExpression)
 
 	// Booleans
 	p.registerPrefix(token.TRUE, p.parseBoolean)

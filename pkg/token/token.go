@@ -22,12 +22,16 @@ const (
 	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
+	POW      = "^"
 
 	LT = "<"
 	GT = ">"
 
 	EQ     = "=="
 	NOT_EQ = "!="
+
+	LEQT = "<="
+	GEQT = ">="
 
 	// Delimiters
 	COMMA     = ","
