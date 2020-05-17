@@ -27,6 +27,13 @@ dishes. And that's it.
 ## TODO
 - [X] Lexer
 - [X] Parser
-- [ ] Interpreter
-- [ ] This readme
+- [ ] Interpreter:
+    - [X] Integer expressions
+    - [X] Booleans expressions
+    - [X] Conditionals expressions
+    - [X] Return expressions
+    - [X] Error handling
+    - [ ] Let statements
+    - [ ] Functions
+- [ ] Documentation
 - [ ] Everything 😅
