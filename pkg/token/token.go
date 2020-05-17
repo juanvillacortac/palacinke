@@ -23,6 +23,7 @@ const (
 	ASTERISK = "*"
 	SLASH    = "/"
 	POW      = "^"
+	MOD      = "%"
 
 	LT = "<"
 	GT = ">"

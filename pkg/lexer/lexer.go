@@ -55,6 +55,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.ASTERISK)
 	case '^':
 		tok = l.newToken(token.POW)
+	case '%':
+		tok = l.newToken(token.MOD)
 	case '<':
 		if l.peekChar() == '=' {
 			tok = l.newTwoCharToken(token.LEQT)

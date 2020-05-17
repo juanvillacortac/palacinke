@@ -12,9 +12,8 @@ const (
 	EQUALS            // ==
 	LESSGREATEREQUALS // >= or <=
 	LESSGREATER       // > or <
-	SUM               // +
-	PRODUCT           // *
-	POW               // ^
+	SUM               // + or -
+	PRODUCT           // *, /, -, ^ or %
 	PREFIX            // -X or !X
 	CALL              // foobar(x)
 )
@@ -22,15 +21,21 @@ const (
 var precedences = map[token.TokenType]int{
 	token.EQ:       EQUALS,
 	token.NOT_EQ:   EQUALS,
+
 	token.LT:       LESSGREATER,
 	token.GT:       LESSGREATER,
+
 	token.LEQT:     LESSGREATEREQUALS,
 	token.GEQT:     LESSGREATEREQUALS,
+
 	token.PLUS:     SUM,
 	token.MINUS:    SUM,
+
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
-	token.POW:      POW,
+	token.POW:      PRODUCT,
+	token.MOD:      PRODUCT,
+
 	token.LPAREN:   CALL,
 }
 
@@ -84,6 +89,7 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.POW, p.parseInfixExpression)
+	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)

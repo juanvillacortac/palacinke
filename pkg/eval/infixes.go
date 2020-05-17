@@ -25,6 +25,8 @@ func evalIntegerInfixExpression(
 	case "^":
 		val := int64(math.Pow(float64(leftVal), float64(rightVal)))
 		return &object.Integer{Value: val}
+	case "%":
+		return &object.Integer{Value: leftVal % rightVal}
 	case "<":
 		return booleanInstances[leftVal < rightVal]
 	case ">":
