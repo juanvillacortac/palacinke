@@ -9,16 +9,20 @@ import (
 	"github.com/juandroid007/palacinke/pkg/ast"
 	"github.com/juandroid007/palacinke/pkg/eval"
 	"github.com/juandroid007/palacinke/pkg/lexer"
+	"github.com/juandroid007/palacinke/pkg/object"
 	"github.com/juandroid007/palacinke/pkg/parser"
+
+	"github.com/logrusorgru/aurora"
 )
 
-const PROMPT = "REPL>> "
+const PROMPT = "REPL>>"
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
 
 	for {
-		fmt.Print(PROMPT)
+		fmt.Fprint(out, aurora.Green(PROMPT + " "))
 		scanned := scanner.Scan()
 		if !scanned {
 			return
@@ -52,6 +56,8 @@ func Start(in io.Reader, out io.Writer) {
 			switch command {
 			case HELP.keyword:
 				printHelp(out)
+			case NEW_ENV.keyword:
+				env = object.NewEnvironment()
 			case EXIT.keyword:
 				return
 			default:
@@ -67,17 +73,23 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, p.Errors())
 			continue
 		}
-		evaluated := eval.Eval(program)
+		evaluated := eval.Eval(program, env)
 		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+			switch evaluated.Type() {
+			case object.ERROR_OBJ:
+				fmt.Fprintln(out, aurora.Red("=> Evaluation error:"))
+				fmt.Fprintln(out, aurora.Magenta("\t* "+evaluated.Inspect()))
+			default:
+				fmt.Fprintln(out, aurora.Yellow("=> "+evaluated.Inspect()))
+			}
 		}
 	}
 }
 
 func printParserErrors(out io.Writer, errors []string) {
-	fmt.Fprintf(out, "-> We ecountered %d parser errors:\n", len(errors))
+	msg := fmt.Sprintf("=> We ecountered %d parser errors:", len(errors))
+	fmt.Fprintln(out, aurora.Red(msg))
 	for _, msg := range errors {
-		io.WriteString(out, "\t-> "+msg+"\n")
+		fmt.Fprintln(out, aurora.Magenta("\t* "+msg))
 	}
 }

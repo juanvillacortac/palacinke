@@ -23,6 +23,10 @@ var (
 		keyword: "l",
 		help:    `Print the code AST in JSON format, usage ":l <EXPRESSION>"`,
 	}
+	NEW_ENV = Command{
+		keyword: "n",
+		help:    "Reset the REPL environment",
+	}
 	EXIT = Command{
 		keyword: "q",
 		help:    "Quit of this REPL",
@@ -31,6 +35,7 @@ var (
 	commands = []Command{
 		HELP,
 		LEX,
+		NEW_ENV,
 		EXIT,
 	}
 )
