@@ -22,7 +22,7 @@ func Start(in io.Reader, out io.Writer) {
 	env := object.NewEnvironment()
 
 	for {
-		fmt.Fprint(out, aurora.Green(PROMPT + " "))
+		fmt.Fprint(out, aurora.Green(PROMPT+" "))
 		scanned := scanner.Scan()
 		if !scanned {
 			return
