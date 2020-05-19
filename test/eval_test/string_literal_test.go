@@ -1,6 +1,10 @@
 package eval_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/juandroid007/palacinke/pkg/object"
+)
 
 func TestStringLiteral(t *testing.T) {
 	input := `"Hello World!"`

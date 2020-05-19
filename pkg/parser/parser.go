@@ -106,6 +106,8 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	// Precedence parens
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 
+	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+
 	// If
 	p.registerPrefix(token.IF, p.parseIfExpression)
 
