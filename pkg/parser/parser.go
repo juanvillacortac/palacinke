@@ -77,7 +77,9 @@ func New(l *lexer.Lexer) *Parser {
 func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 
+	// Types
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
 
 	// Prefixes
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)

@@ -97,6 +97,12 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return lit
 }
 
+/***** String literal ********************************************************/
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{Token: p.currentToken, Value: p.currentToken.Literal}
+}
+
 /***** Prefix expression *****************************************************/
 
 func (p *Parser) parsePrefixExpression() ast.Expression {

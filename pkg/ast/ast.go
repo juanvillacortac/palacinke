@@ -66,11 +66,9 @@ type Identifier struct {
 	Value string      `json:"value"`
 }
 
-func (i *Identifier) expressionNode() {}
-
+func (i *Identifier) expressionNode()      {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
-
-func (i *Identifier) String() string { return i.Value }
+func (i *Identifier) String() string       { return i.Value }
 
 /***** Let statement *********************************************************/
 
@@ -80,10 +78,8 @@ type LetStatement struct {
 	Value Expression  `json:"value"`
 }
 
-func (ls *LetStatement) statementNode() {}
-
+func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
-
 func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
@@ -107,10 +103,8 @@ type ReturnStatement struct {
 	ReturnValue Expression  `json:"return_value"`
 }
 
-func (rs *ReturnStatement) statementNode() {}
-
+func (rs *ReturnStatement) statementNode()       {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
-
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
 
@@ -132,10 +126,8 @@ type ExpressionStatement struct {
 	Expression Expression  `json:"expression"`
 }
 
-func (es *ExpressionStatement) statementNode() {}
-
+func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
-
 func (es *ExpressionStatement) String() string {
 	var out bytes.Buffer
 	if es.Expression != nil {
@@ -151,11 +143,20 @@ type IntegerLiteral struct {
 	Value int64       `json:"value"`
 }
 
-func (il *IntegerLiteral) expressionNode() {}
-
+func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+func (il *IntegerLiteral) String() string       { return il.Token.Literal }
 
-func (il *IntegerLiteral) String() string { return il.Token.Literal }
+/***** String literal ********************************************************/
+
+type StringLiteral struct {
+	Token token.Token `json:"token"`
+	Value string      `json:"value"`
+}
+
+func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
+func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
 /***** Prefix expression *****************************************************/
 
@@ -165,10 +166,8 @@ type PrefixExpression struct {
 	Right    Expression  `json:"right"`
 }
 
-func (pe *PrefixExpression) expressionNode() {}
-
+func (pe *PrefixExpression) expressionNode()      {}
 func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
-
 func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
 
@@ -189,10 +188,8 @@ type InfixExpression struct {
 	Right    Expression  `json:"right"`
 }
 
-func (oe *InfixExpression) expressionNode() {}
-
+func (oe *InfixExpression) expressionNode()      {}
 func (oe *InfixExpression) TokenLiteral() string { return oe.Token.Literal }
-
 func (oe *InfixExpression) String() string {
 	var out bytes.Buffer
 
@@ -212,11 +209,9 @@ type Boolean struct {
 	Value bool        `json:"value"`
 }
 
-func (b *Boolean) expressionNode() {}
-
+func (b *Boolean) expressionNode()      {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
-
-func (b *Boolean) String() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return b.Token.Literal }
 
 /***** Block statement *******************************************************/
 
@@ -225,15 +220,17 @@ type BlockStatement struct {
 	Statements []Statement `json:"statements"`
 }
 
-func (bs *BlockStatement) statementNode() {}
-
+func (bs *BlockStatement) statementNode()       {}
 func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
-
 func (bs *BlockStatement) String() string {
 	var out bytes.Buffer
 
-	for _, s := range bs.Statements {
-		out.WriteString(s.String() + " ")
+	for i, s := range bs.Statements {
+		if i == len(bs.Statements)-1 {
+			out.WriteString(s.String())
+		} else {
+			out.WriteString(s.String() + " ")
+		}
 	}
 
 	return out.String()
@@ -248,10 +245,8 @@ type IfExpression struct {
 	Alternative *BlockStatement `json:"alternative"`
 }
 
-func (ie *IfExpression) expressionNode() {}
-
+func (ie *IfExpression) expressionNode()      {}
 func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
-
 func (ie *IfExpression) String() string {
 	var out bytes.Buffer
 
@@ -264,7 +259,7 @@ func (ie *IfExpression) String() string {
 	if ie.Alternative != nil {
 		out.WriteString(" else { ")
 		out.WriteString(ie.Alternative.String())
-		out.WriteString("}")
+		out.WriteString(" }")
 	}
 
 	return out.String()
@@ -278,10 +273,8 @@ type FunctionLiteral struct {
 	Body       *BlockStatement `json:"body"`
 }
 
-func (fl *FunctionLiteral) expressionNode() {}
-
+func (fl *FunctionLiteral) expressionNode()      {}
 func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
-
 func (fl *FunctionLiteral) String() string {
 	var out bytes.Buffer
 
@@ -307,10 +300,8 @@ type CallExpression struct {
 	Arguments []Expression `json:"arguments"`
 }
 
-func (ce *CallExpression) expressionNode() {}
-
+func (ce *CallExpression) expressionNode()      {}
 func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
-
 func (ce *CallExpression) String() string {
 	var out bytes.Buffer
 

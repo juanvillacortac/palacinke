@@ -1,0 +1,6 @@
+let gaby = fn() {
+	let msg = "Gaby es la mujer más bella de este mundo"
+	println(msg)
+}
+
+gaby()

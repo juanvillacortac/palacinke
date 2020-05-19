@@ -21,7 +21,11 @@ dishes. And that's it.
     - [X] Conditionals expressions
     - [X] Return expressions
     - [X] Error handling
-    - [ ] Let statements
-    - [ ] Functions
+    - [X] Let statements
+    - [X] Functions
+    - [X] Strings
+    - [ ] Builtins functions
+    - [ ] Arrays
+    - [ ] Hashes
 - [ ] Documentation
 - [ ] Everything 😅

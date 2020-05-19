@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/juandroid007/palacinke/pkg/repl"
@@ -22,10 +23,25 @@ const ASCII_ART = `               _____________
    | |                \_______/      | |`
 
 func main() {
-	fmt.Printf("%s\n\n", ASCII_ART)
+	if len(os.Args) == 1 {
+		fmt.Printf("%s\n\n", ASCII_ART)
+		fmt.Printf("Palacinke lang - %s\n\n", REPO)
+		fmt.Printf(
+			"Type :%s for help and :%s for exit\n",
+			repl.HELP.Keyword(),
+			repl.EXIT.Keyword(),
+		)
 
-	fmt.Printf("Palacinke lang - %s\n\n", REPO)
-	fmt.Printf("Type :%s for help and :%s for exit\n", repl.HELP.Keyword(), repl.EXIT.Keyword())
-
-	repl.Start(os.Stdin, os.Stdout)
+		repl.Start(os.Stdin, os.Stdout)
+	} else {
+		path := os.Args[1]
+		file, err := ioutil.ReadFile(path)
+		if err != nil {
+			panic(path + "isn't a valid path")
+		}
+		input := string(file)
+		if len(input) > 0 {
+			repl.Eval(input, os.Stdin, os.Stdout)
+		}
+	}
 }

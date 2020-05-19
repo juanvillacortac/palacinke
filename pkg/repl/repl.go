@@ -20,6 +20,7 @@ const PROMPT = "REPL>>"
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
+	env.SetOutput(out)
 
 	for {
 		fmt.Fprint(out, aurora.Green(PROMPT+" "))
@@ -58,6 +59,7 @@ func Start(in io.Reader, out io.Writer) {
 				printHelp(out)
 			case NEW_ENV.keyword:
 				env = object.NewEnvironment()
+				env.SetOutput(out)
 			case EXIT.keyword:
 				return
 			default:
@@ -77,13 +79,36 @@ func Start(in io.Reader, out io.Writer) {
 		if evaluated != nil {
 			switch evaluated.Type() {
 			case object.ERROR_OBJ:
-				fmt.Fprintln(out, aurora.Red("=> Evaluation error:"))
-				fmt.Fprintln(out, aurora.Magenta("\t* "+evaluated.Inspect()))
+				printEvalError(out, evaluated)
 			default:
 				fmt.Fprintln(out, aurora.Yellow("=> "+evaluated.Inspect()))
 			}
 		}
 	}
+}
+
+func Eval(input string, in io.Reader, out io.Writer) {
+	env := object.NewEnvironment()
+	env.SetOutput(out)
+
+	lex := lexer.New(input)
+	p := parser.New(lex)
+
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		printParserErrors(out, p.Errors())
+		return
+	}
+
+	evaluated := eval.Eval(program, env)
+	if evaluated.Type() == object.ERROR_OBJ {
+		printEvalError(out, evaluated)
+	}
+}
+
+func printEvalError(out io.Writer, obj object.Object) {
+	fmt.Fprintln(out, aurora.Red("=> Evaluation error:"))
+	fmt.Fprintln(out, aurora.Magenta("\t* "+obj.Inspect()))
 }
 
 func printParserErrors(out io.Writer, errors []string) {
