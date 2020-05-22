@@ -16,6 +16,7 @@ const (
 	PRODUCT           // *, /, -, ^ or %
 	PREFIX            // -X or !X
 	CALL              // foobar(x)
+	INDEX             // array[index]
 )
 
 var precedences = map[token.TokenType]int{
@@ -36,7 +37,8 @@ var precedences = map[token.TokenType]int{
 	token.POW:      PRODUCT,
 	token.MOD:      PRODUCT,
 
-	token.LPAREN: CALL,
+	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
 }
 
 type (
@@ -78,6 +80,7 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 
 	// Types
+	p.registerPrefix(token.NIL, p.parseNilLiteral)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 
@@ -107,6 +110,7 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 
 	// If
 	p.registerPrefix(token.IF, p.parseIfExpression)
@@ -154,8 +158,6 @@ func (p *Parser) parseStatement() ast.Statement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	// defer untrace(trace("parseExpression"))
-
 	prefix := p.prefixParseFns[p.currentToken.Type]
 	if prefix == nil {
 		p.noPrefixParseFnError(p.currentToken.Type)

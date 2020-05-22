@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/juandroid007/palacinke/pkg/ast"
+	"github.com/juandroid007/palacinke/pkg/token"
 )
 
 type ObjectType string
@@ -19,6 +20,7 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	FUNCTION_OBJ     = "FUNCTION"
 	BUILTIN_OBJ      = "BUILTIN"
+	ARRAY_OBJ        = "ARRAY"
 )
 
 type Object interface {
@@ -91,7 +93,7 @@ func (f *Function) Inspect() string {
 	return out.String()
 }
 
-type BuiltingFunction func(env *Environment, args ...Object) Object
+type BuiltingFunction func(env *Environment, pos token.TokenPos, args ...Object) Object
 
 type Builtin struct {
 	Fn BuiltingFunction
@@ -99,3 +101,23 @@ type Builtin struct {
 
 func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
 func (b *Builtin) Inspect() string  { return "builtin function" }
+
+type Array struct {
+	Elements []Object
+}
+
+func (ao *Array) Type() ObjectType { return ARRAY_OBJ }
+func (ao *Array) Inspect() string {
+	var out bytes.Buffer
+
+	elements := []string{}
+	for _, e := range ao.Elements {
+		elements = append(elements, e.Inspect())
+	}
+
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("]")
+
+	return out.String()
+}

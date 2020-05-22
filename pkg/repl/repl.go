@@ -107,14 +107,14 @@ func Eval(input string, in io.Reader, out io.Writer) {
 }
 
 func printEvalError(out io.Writer, obj object.Object) {
-	fmt.Fprintln(out, aurora.Red("=> Evaluation error:"))
-	fmt.Fprintln(out, aurora.Magenta("\t* "+obj.Inspect()))
+	fmt.Fprintln(out, aurora.Yellow("=> Evaluation error:"))
+	fmt.Fprintln(out, aurora.Red("\t"+obj.Inspect()))
 }
 
 func printParserErrors(out io.Writer, errors []string) {
 	msg := fmt.Sprintf("=> We ecountered %d parser errors:", len(errors))
-	fmt.Fprintln(out, aurora.Red(msg))
+	fmt.Fprintln(out, aurora.Yellow(msg))
 	for _, msg := range errors {
-		fmt.Fprintln(out, aurora.Magenta("\t* "+msg))
+		fmt.Fprintln(out, aurora.Red("\t"+msg))
 	}
 }

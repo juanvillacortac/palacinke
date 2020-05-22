@@ -3,6 +3,7 @@ package eval
 import (
 	"github.com/juandroid007/palacinke/pkg/ast"
 	"github.com/juandroid007/palacinke/pkg/object"
+	"github.com/juandroid007/palacinke/pkg/token"
 )
 
 var (
@@ -22,6 +23,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalProgram(node, env)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
+	case *ast.NilLiteral:
+		return NIL
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.StringLiteral:
@@ -33,7 +36,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(right) {
 			return right
 		}
-		return evalPrefixExpression(node.Operator, right)
+		return evalPrefixExpression(node.Operator, right, node.Token.Pos)
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
@@ -45,7 +48,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return right
 		}
 
-		return evalInfixExpression(node.Operator, left, right)
+		return evalInfixExpression(node.Operator, left, right, node.Token.Pos)
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 	case *ast.IfExpression:
@@ -63,7 +66,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		env.Set(node.Name.Value, val)
 	case *ast.Identifier:
-		return evalIdentifier(node, env)
+		return evalIdentifier(node, env, node.Token.Pos)
 	case *ast.FunctionLiteral:
 		params := node.Parameters
 		body := node.Body
@@ -77,14 +80,20 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}
-		return applyFunction(env, function, args)
+		return applyFunction(env, function, args, node.Token.Pos)
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
 	}
 
-	return nil
+	return NIL
 }
 
 func evalProgram(program *ast.Program, env *object.Environment) object.Object {
-	var result object.Object
+	var result object.Object = NIL
 
 	for _, statement := range program.Statements {
 		result = Eval(statement, env)
@@ -101,7 +110,7 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 }
 
 func evalStatements(stmts []ast.Statement, env *object.Environment) object.Object {
-	var result object.Object
+	var result object.Object = NIL
 
 	for _, stmt := range stmts {
 		result = Eval(stmt, env)
@@ -113,39 +122,40 @@ func evalStatements(stmts []ast.Statement, env *object.Environment) object.Objec
 	return result
 }
 
-func evalPrefixExpression(operator string, right object.Object) object.Object {
+func evalPrefixExpression(operator string, right object.Object, pos token.TokenPos) object.Object {
 	switch operator {
 	case "!":
 		return evalBangOperatorExpression(right)
 	case "-":
-		return evalMinusPrefixOperatorExpression(right)
+		return evalMinusPrefixOperatorExpression(right, pos)
 	default:
-		return newError("Unknown operator: %s%s", operator, right.Type())
+		return newError(pos, "Unknown operator: %s%s", operator, right.Type())
 	}
 }
 
 func evalInfixExpression(
 	operator string,
 	left, right object.Object,
+	pos token.TokenPos,
 ) object.Object {
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
-		return evalIntegerInfixExpression(operator, left, right)
+		return evalIntegerInfixExpression(operator, left, right, pos)
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
-		return evalStringInfixExpression(operator, left, right)
+		return evalStringInfixExpression(operator, left, right, pos)
 	case operator == "==":
 		return booleanInstances[left == right]
 	case operator == "!=":
 		return booleanInstances[left != right]
 	case left.Type() != right.Type():
-		return newError("Type mismatch: %s %s %s", left.Type(), operator, right.Type())
+		return newError(pos, "Type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	default:
-		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
-	var result object.Object
+	var result object.Object = NIL
 
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
@@ -191,6 +201,7 @@ func isTruthy(obj object.Object) bool {
 func evalIdentifier(
 	node *ast.Identifier,
 	env *object.Environment,
+	pos token.TokenPos,
 ) object.Object {
 	if val, ok := env.Get(node.Value); ok {
 		return val
@@ -200,7 +211,7 @@ func evalIdentifier(
 		return builtin
 	}
 
-	return newError("Identifier not found: " + node.Value)
+	return newError(pos, "Identifier not found: "+node.Value)
 }
 
 func evalExpressions(
@@ -222,20 +233,21 @@ func applyFunction(
 	env *object.Environment,
 	fn object.Object,
 	args []object.Object,
+	pos token.TokenPos,
 ) object.Object {
 	switch fn := fn.(type) {
 	case *object.Function:
 		if len(fn.Parameters) != len(args) {
-			return newError("Wrong number of arguments. Got: %d, want: %d",
+			return newError(pos, "Wrong number of arguments. Got: %d, want: %d",
 				len(args), len(fn.Parameters))
 		}
 		extendedEnv := extendFunctionEnv(fn, args)
 		evaluated := Eval(fn.Body, extendedEnv)
 		return unwrapReturnValue(evaluated)
 	case *object.Builtin:
-		return fn.Fn(env, args...)
+		return fn.Fn(env, pos, args...)
 	default:
-		return newError("Not a function: %s", fn.Type())
+		return newError(pos, "Not a function: %s", fn.Type())
 	}
 }
 

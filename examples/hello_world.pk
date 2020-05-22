@@ -1,5 +1,7 @@
+// This is a comment!
+
 let gaby = fn() {
-	let msg = "Gaby es la mujer más bella de este mundo"
+	let msg = "Gaby is the most beautiful girl in da world"
 	println(msg)
 }
 

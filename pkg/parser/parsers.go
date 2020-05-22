@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/juandroid007/palacinke/pkg/ast"
@@ -56,8 +55,6 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 /***** Expression statement **************************************************/
 
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
-	// defer untrace(trace("parseExpressionStatement"))
-
 	stmt := &ast.ExpressionStatement{Token: p.currentToken}
 
 	stmt.Expression = p.parseExpression(LOWEST)
@@ -78,17 +75,22 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	}
 }
 
+/***** Nil literal ***********************************************************/
+
+func (p *Parser) parseNilLiteral() ast.Expression {
+	lit := &ast.NilLiteral{Token: p.currentToken}
+
+	return lit
+}
+
 /***** Integer literal *******************************************************/
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
-	// defer untrace(trace("parseIntegerLiteral"))
-
 	lit := &ast.IntegerLiteral{Token: p.currentToken}
 
 	value, err := strconv.ParseInt(p.currentToken.Literal, 0, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer", p.currentToken.Literal)
-		p.errors = append(p.errors, msg)
+		p.appendError("Could not parse %q as integer", p.currentToken.Literal)
 		return nil
 	}
 
@@ -106,8 +108,6 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 /***** Prefix expression *****************************************************/
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
-	// defer untrace(trace("parsePrefixExpression"))
-
 	expression := &ast.PrefixExpression{
 		Token:    p.currentToken,
 		Operator: p.currentToken.Literal,
@@ -123,8 +123,6 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 /***** Infix expression ******************************************************/
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	// defer untrace(trace("parseInfixExpression"))
-
 	expression := &ast.InfixExpression{
 		Token:    p.currentToken,
 		Operator: p.currentToken.Literal,
@@ -325,4 +323,19 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	}
 
 	return list
+}
+
+/***** Expression list *******************************************************/
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.currentToken, Left: left}
+
+	p.nextToken()
+	exp.Index = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+
+	return exp
 }

@@ -32,6 +32,13 @@ func (e *Environment) Get(key string) (Object, bool) {
 }
 
 func (e *Environment) Set(key string, val Object) Object {
+	if e.outer != nil {
+		_, ok := e.outer.Get(key)
+		if ok {
+			e.outer.store[key] = val
+			return val
+		}
+	}
 	e.store[key] = val
 	return val
 }

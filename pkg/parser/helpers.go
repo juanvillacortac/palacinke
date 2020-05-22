@@ -24,10 +24,14 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
+func (p *Parser) appendError(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	line, col := p.currentToken.Pos.Line, p.currentToken.Pos.Col
+	p.errors = append(p.errors, fmt.Sprintf("[%d:%d] %s", line, col, msg))
+}
+
 func (p *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("Expected next token to be %s, got %s instead",
-		t, p.peekToken.Type)
-	p.errors = append(p.errors, msg)
+	p.appendError("Expected next token to be %s, got %s instead", t, p.peekToken.Type)
 }
 
 func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
@@ -39,8 +43,7 @@ func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 }
 
 func (p *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("No prefix parse function for %s found", t)
-	p.errors = append(p.errors, msg)
+	p.appendError("No prefix parse function for %s found", t)
 }
 
 func (p *Parser) peekPrecedence() int {

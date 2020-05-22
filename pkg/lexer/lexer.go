@@ -1,50 +1,38 @@
 package lexer
 
-import "github.com/juandroid007/palacinke/pkg/token"
+import (
+	"encoding/hex"
+	"strings"
+	"text/scanner"
+
+	"github.com/juandroid007/palacinke/pkg/token"
+)
 
 type Lexer struct {
-	input        string
-	position     int  // current position in input (points to current char)
-	readPosition int  // current reading position in input (after current char)
-	ch           byte // current char under examination
+	s    scanner.Scanner
+	curr rune
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{
-		input: input,
-	}
-	l.readChar()
+	var s scanner.Scanner
+	s.Init(strings.NewReader(input))
+	l := &Lexer{s: s}
+	l.readRune()
 	return l
 }
 
-func (l *Lexer) readChar() {
-	if l.readPosition >= len(l.input) {
-		l.ch = 0
-	} else {
-		l.ch = l.input[l.readPosition]
-	}
-	l.position = l.readPosition
-	l.readPosition += 1
+func (l *Lexer) readRune() {
+	l.curr = l.s.Scan()
 }
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhitespace()
-
-	switch l.ch {
+	switch l.curr {
 	case '=':
-		if l.peekChar() == '=' {
-			tok = l.newTwoCharToken(token.EQ)
-		} else {
-			tok = l.newToken(token.ASSIGN)
-		}
+		tok = l.eitherToken('=', token.EQ, token.ASSIGN)
 	case '!':
-		if l.peekChar() == '=' {
-			tok = l.newTwoCharToken(token.NOT_EQ)
-		} else {
-			tok = l.newToken(token.BANG)
-		}
+		tok = l.eitherToken('=', token.NOT_EQ, token.BANG)
 	case '+':
 		tok = l.newToken(token.PLUS)
 	case '-':
@@ -58,17 +46,9 @@ func (l *Lexer) NextToken() token.Token {
 	case '%':
 		tok = l.newToken(token.MOD)
 	case '<':
-		if l.peekChar() == '=' {
-			tok = l.newTwoCharToken(token.LEQT)
-		} else {
-			tok = l.newToken(token.LT)
-		}
+		tok = l.eitherToken('=', token.LEQT, token.LT)
 	case '>':
-		if l.peekChar() == '=' {
-			tok = l.newTwoCharToken(token.GEQT)
-		} else {
-			tok = l.newToken(token.GT)
-		}
+		tok = l.eitherToken('=', token.GEQT, token.GT)
 	case ';':
 		tok = l.newToken(token.SEMICOLON)
 	case ',':
@@ -85,42 +65,141 @@ func (l *Lexer) NextToken() token.Token {
 		tok = l.newToken(token.LBRACKET)
 	case ']':
 		tok = l.newToken(token.RBRACKET)
-	case '"':
-		tok.Type = token.STRING
-		tok.Literal = l.readString()
-	case 0:
-		tok.Literal = ""
-		tok.Type = token.EOF
-	default:
-		if isLetter(l.ch) {
-			tok.Literal = l.readIdentifier()
-			tok.Type = token.LookupIdent(tok.Literal)
-			return tok
-		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
-			return tok
-		} else {
-			tok = l.newToken(token.ILLEGAL)
+	case scanner.Ident:
+		p := l.s.Pos()
+		lit := l.s.TokenText()
+		col := p.Column
+		if la := l.s.Peek(); la == '?' || la == '!' {
+			l.readRune()
+			lit += l.s.TokenText()
+			col += 1
 		}
+		tok = token.Token{
+			Type:    token.LookupIdent(lit),
+			Literal: lit,
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column,
+			},
+		}
+	case scanner.Int:
+		p := l.s.Pos()
+		lit := l.s.TokenText()
+		tok = token.Token{
+			Type:    token.INT,
+			Literal: lit,
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column,
+			},
+		}
+	case scanner.String:
+		p := l.s.Pos()
+		txt := l.s.TokenText()
+		str := txt[1 : len(txt)-1]
+		lit := &strings.Builder{}
+		for i := 0; i < len(str); i++ {
+			ch := str[i]
+			if ch == '\\' {
+				switch str[i+1] {
+				case '"':
+					lit.WriteByte('"')
+				case 'n':
+					lit.WriteByte('\n')
+				case 'r':
+					lit.WriteByte('\r')
+				case 't':
+					lit.WriteByte('\t')
+				case '\\':
+					lit.WriteByte('\\')
+				case 'x':
+					// Skip over the the '\\', 'x' and the next two bytes (hex)
+					i += 3
+					src := string([]byte{str[i-1], ch})
+					dst, err := hex.DecodeString(src)
+					if err != nil {
+						return l.newToken(token.ILLEGAL)
+					}
+					lit.Write(dst)
+					continue
+				}
+
+				// Skip over the '\\' and the matched single escape char
+				i++
+				continue
+			} else {
+				if ch == '"' || ch == 0 {
+					break
+				}
+			}
+			lit.WriteByte(ch)
+		}
+		tok = token.Token{
+			Type:    token.STRING,
+			Literal: lit.String(),
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column - 2,
+			},
+		}
+	case scanner.EOF:
+		p := l.s.Pos()
+		tok = token.Token{
+			Type:    token.EOF,
+			Literal: "",
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column,
+			},
+		}
+	default:
+		tok = l.newToken(token.ILLEGAL)
 	}
 
-	l.readChar()
+	l.readRune()
 	return tok
 }
 
 func (l *Lexer) newToken(tokenType token.TokenType) token.Token {
+	p := l.s.Pos()
+	lit := l.s.TokenText()
 	return token.Token{
 		Type:    tokenType,
-		Literal: string(l.ch),
+		Literal: lit,
+		Pos: token.TokenPos{
+			Line: p.Line,
+			Col:  p.Column,
+		},
 	}
 }
 
-func (l *Lexer) newTwoCharToken(tokenType token.TokenType) token.Token {
-	ch := l.ch
-	l.readChar()
-	return token.Token{
-		Type:    tokenType,
-		Literal: string(ch) + string(l.ch),
+func (l *Lexer) eitherToken(
+	lookAhead rune,
+	optionToken, alternativeToken token.TokenType,
+) token.Token {
+	p := l.s.Pos()
+	lit := l.s.TokenText()
+	col := p.Column
+	if l.s.Peek() == lookAhead {
+		l.readRune()
+		lit += l.s.TokenText()
+		col += 1
+		return token.Token{
+			Type:    optionToken,
+			Literal: lit,
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column,
+			},
+		}
+	} else {
+		return token.Token{
+			Type:    alternativeToken,
+			Literal: lit,
+			Pos: token.TokenPos{
+				Line: p.Line,
+				Col:  p.Column,
+			},
+		}
 	}
 }

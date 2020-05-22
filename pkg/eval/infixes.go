@@ -4,11 +4,13 @@ import (
 	"math"
 
 	"github.com/juandroid007/palacinke/pkg/object"
+	"github.com/juandroid007/palacinke/pkg/token"
 )
 
 func evalIntegerInfixExpression(
 	operator string,
 	left, right object.Object,
+	pos token.TokenPos,
 ) object.Object {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
@@ -40,16 +42,17 @@ func evalIntegerInfixExpression(
 	case ">=":
 		return booleanInstances[leftVal >= rightVal]
 	default:
-		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return newError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
 func evalStringInfixExpression(
 	operator string,
 	left, right object.Object,
+	pos token.TokenPos,
 ) object.Object {
 	if operator != "+" {
-		return newError("Unknown operator: %s %s %s",
+		return newError(pos, "Unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
 

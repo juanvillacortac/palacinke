@@ -5,6 +5,12 @@ type TokenType string
 type Token struct {
 	Type    TokenType `json:"type"`
 	Literal string    `json:"literal"`
+	Pos     TokenPos  `json:"pos"`
+}
+
+type TokenPos struct {
+	Line int `json:"line"`
+	Col  int `json:"col"`
 }
 
 const (
@@ -12,8 +18,10 @@ const (
 	EOF     = "EOF"
 
 	// Identifiers + literals
-	IDENT = "IDENT" // add, foobar, x, y, ...
-	INT   = "INT"   // 1343456
+	IDENT  = "IDENT" // add, foobar, x, y, ...
+	INT    = "INT"   // 1343456
+	STRING = "STRING"
+	NIL    = "NIL"
 
 	// Operators
 	ASSIGN   = "="
@@ -53,8 +61,6 @@ const (
 	IF       = "IF"
 	ELSE     = "ELSE"
 	RETURN   = "RETURN"
-
-	STRING = "STRING"
 )
 
 var keywords = map[string]TokenType{
@@ -62,6 +68,7 @@ var keywords = map[string]TokenType{
 	"let":    LET,
 	"true":   TRUE,
 	"false":  FALSE,
+	"nil":    NIL,
 	"if":     IF,
 	"else":   ELSE,
 	"return": RETURN,
