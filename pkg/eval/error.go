@@ -7,7 +7,7 @@ import (
 	"github.com/juandroid007/palacinke/pkg/token"
 )
 
-func newError(pos token.TokenPos, format string, a ...interface{}) *object.Error {
+func NewError(pos token.TokenPos, format string, a ...interface{}) *object.Error {
 	msg := fmt.Sprintf(format, a...)
 	return &object.Error{
 		Message: fmt.Sprintf("[%d:%d] %s", pos.Line, pos.Col, msg),

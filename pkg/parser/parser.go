@@ -112,6 +112,8 @@ func (p *Parser) registerPrefixesAndInfixes() {
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 
+	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+
 	// If
 	p.registerPrefix(token.IF, p.parseIfExpression)
 

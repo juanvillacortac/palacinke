@@ -9,17 +9,25 @@ type Environment struct {
 	store  map[string]Object
 	outer  *Environment
 	output io.Writer
+
+	// Builtins map[string]*Builtin
 }
 
 func NewEnvironment() *Environment {
 	s := make(map[string]Object)
-	return &Environment{store: s, outer: nil, output: &bytes.Buffer{}}
+	return &Environment{
+		store:    s,
+		outer:    nil,
+		output:   &bytes.Buffer{},
+	// 	Builtins: make(map[string]*Builtin),
+	}
 }
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()
 	env.outer = outer
 	env.output = outer.output
+	// env.Builtins = outer.Builtins
 	return env
 }
 
@@ -41,6 +49,12 @@ func (e *Environment) Set(key string, val Object) Object {
 	}
 	e.store[key] = val
 	return val
+}
+
+func (e *Environment) SetObjects(builtins map[string]Object) {
+	for key, builtin := range builtins {
+		e.Set(key, builtin)
+	}
 }
 
 func (e *Environment) SetOutput(out io.Writer) {

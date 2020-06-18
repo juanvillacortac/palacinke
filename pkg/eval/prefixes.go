@@ -20,7 +20,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 
 func evalMinusPrefixOperatorExpression(right object.Object, pos token.TokenPos) object.Object {
 	if right.Type() != object.INTEGER_OBJ {
-		return newError(pos, "Unknown operator: -%s", right.Type())
+		return NewError(pos, "Unknown operator: -%s", right.Type())
 	}
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}

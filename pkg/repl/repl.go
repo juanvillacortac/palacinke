@@ -91,19 +91,24 @@ func Eval(input string, in io.Reader, out io.Writer) {
 	env := object.NewEnvironment()
 	env.SetOutput(out)
 
+	EvalWithEnv(input, env)
+}
+
+func EvalWithEnv(input string, env *object.Environment) object.Object {
 	lex := lexer.New(input)
 	p := parser.New(lex)
 
 	program := p.ParseProgram()
 	if len(p.Errors()) != 0 {
-		printParserErrors(out, p.Errors())
-		return
+		printParserErrors(env.GetOutput(), p.Errors())
+		return eval.NIL
 	}
 
 	evaluated := eval.Eval(program, env)
 	if evaluated.Type() == object.ERROR_OBJ {
-		printEvalError(out, evaluated)
+		printEvalError(env.GetOutput(), evaluated)
 	}
+	return evaluated
 }
 
 func printEvalError(out io.Writer, obj object.Object) {

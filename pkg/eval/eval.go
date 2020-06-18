@@ -87,6 +87,18 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return elements[0]
 		}
 		return &object.Array{Elements: elements}
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+		index := Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+		return evalIndexExpression(left, index, node.Token.Pos)
+	case *ast.HashLiteral:
+		return evalHashLiteral(node, env, node.Token.Pos)
 	}
 
 	return NIL
@@ -129,7 +141,7 @@ func evalPrefixExpression(operator string, right object.Object, pos token.TokenP
 	case "-":
 		return evalMinusPrefixOperatorExpression(right, pos)
 	default:
-		return newError(pos, "Unknown operator: %s%s", operator, right.Type())
+		return NewError(pos, "Unknown operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -148,9 +160,9 @@ func evalInfixExpression(
 	case operator == "!=":
 		return booleanInstances[left != right]
 	case left.Type() != right.Type():
-		return newError(pos, "Type mismatch: %s %s %s", left.Type(), operator, right.Type())
+		return NewError(pos, "Type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	default:
-		return newError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return NewError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -211,7 +223,7 @@ func evalIdentifier(
 		return builtin
 	}
 
-	return newError(pos, "Identifier not found: "+node.Value)
+	return NewError(pos, "Identifier not found: "+node.Value)
 }
 
 func evalExpressions(
@@ -238,7 +250,7 @@ func applyFunction(
 	switch fn := fn.(type) {
 	case *object.Function:
 		if len(fn.Parameters) != len(args) {
-			return newError(pos, "Wrong number of arguments. Got: %d, want: %d",
+			return NewError(pos, "Wrong number of arguments. Got: %d, want: %d",
 				len(args), len(fn.Parameters))
 		}
 		extendedEnv := extendFunctionEnv(fn, args)
@@ -247,7 +259,7 @@ func applyFunction(
 	case *object.Builtin:
 		return fn.Fn(env, pos, args...)
 	default:
-		return newError(pos, "Not a function: %s", fn.Type())
+		return NewError(pos, "Not a function: %s", fn.Type())
 	}
 }
 
@@ -269,4 +281,76 @@ func unwrapReturnValue(obj object.Object) object.Object {
 		return returnValue.Value
 	}
 	return obj
+}
+
+func evalIndexExpression(left, index object.Object, pos token.TokenPos) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return evalArrayIndexExpression(left, index)
+	case left.Type() == object.HASH_OBJ:
+		return evalHashIndexExpression(left, index, pos)
+	default:
+		return NewError(pos, "Index operator not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	arrayObject := array.(*object.Array)
+	idx := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+
+	if idx < 0 || idx > max {
+		return NIL
+	}
+
+	return arrayObject.Elements[idx]
+}
+
+func evalHashLiteral(
+	node *ast.HashLiteral,
+	env *object.Environment,
+	pos token.TokenPos,
+) object.Object {
+	pairs := make(map[object.HashKey]object.HashPair)
+
+	for keyNode, valNode := range node.Pairs {
+		key := Eval(keyNode, env)
+		if isError(key) {
+			return key
+		}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return NewError(pos, "Unusable as hash key: %s", key.Type())
+		}
+
+		value := Eval(valNode, env)
+		if isError(value) {
+			return value
+		}
+
+		hashed := hashKey.HashKey()
+		pairs[hashed] = object.HashPair{Key: key, Value: value}
+	}
+
+	return &object.Hash{Pairs: pairs}
+}
+
+func evalHashIndexExpression(
+	hash, index object.Object,
+	pos token.TokenPos,
+) object.Object {
+	hashObject := hash.(*object.Hash)
+
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return NewError(pos, "Unusable as hash key; %s", index.Type())
+	}
+
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return NIL
+	}
+
+	return pair.Value
 }

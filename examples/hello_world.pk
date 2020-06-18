@@ -3,6 +3,7 @@
 let gaby = fn() {
 	let msg = "Gaby is the most beautiful girl in da world"
 	println(msg)
+	msg
 }
 
 gaby()

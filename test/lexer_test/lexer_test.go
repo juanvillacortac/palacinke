@@ -11,7 +11,7 @@ func TestNextToken(t *testing.T) {
 	input := `
 fn let return true false
 123 =
-;,(){}[]
+;:,(){}[]
 "foobar"
 世界
 `
@@ -28,6 +28,7 @@ fn let return true false
 		{token.INT, "123"},
 		{token.ASSIGN, "="},
 		{token.SEMICOLON, ";"},
+		{token.COLON, ":"},
 		{token.COMMA, ","},
 		{token.LPAREN, "("},
 		{token.RPAREN, ")"},

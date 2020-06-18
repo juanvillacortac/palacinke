@@ -1,0 +1,16 @@
+let fizzbuzz = fn(n) {
+	let test = fn(d, s, x) {
+		if n % d == 0 { return fn(n) { s } }
+		x
+	}
+	let fizz = fn(x) { test(3, "Fizz", x) }
+	let buzz = fn(x) { test(5, "Buzz", x) }
+
+	println(fizz(buzz(fn(x) { x }))(n))
+}
+
+fizzbuzz(1)
+fizzbuzz(2)
+fizzbuzz(3)
+fizzbuzz(4)
+fizzbuzz(5)

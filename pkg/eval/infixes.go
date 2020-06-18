@@ -42,7 +42,7 @@ func evalIntegerInfixExpression(
 	case ">=":
 		return booleanInstances[leftVal >= rightVal]
 	default:
-		return newError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
+		return NewError(pos, "Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -52,7 +52,7 @@ func evalStringInfixExpression(
 	pos token.TokenPos,
 ) object.Object {
 	if operator != "+" {
-		return newError(pos, "Unknown operator: %s %s %s",
+		return NewError(pos, "Unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
 	}
 
