@@ -15,7 +15,7 @@ dishes. And that's it.
 ## TODO
 - [X] Lexer
 - [X] Parser
-- [ ] Interpreter:
+- [X] Interpreter:
     - [X] Integer expressions
     - [X] Booleans expressions
     - [X] Conditionals expressions
@@ -24,8 +24,8 @@ dishes. And that's it.
     - [X] Let statements
     - [X] Functions
     - [X] Strings
-    - [ ] Builtins functions
-    - [ ] Arrays
-    - [ ] Hashes
+    - [X] Builtins functions
+    - [X] Arrays
+    - [X] Hashes
 - [ ] Documentation
 - [ ] Everything 😅
