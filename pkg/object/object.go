@@ -184,3 +184,7 @@ func (h *Hash) Inspect() string {
 type Hashable interface {
 	HashKey() HashKey
 }
+
+func GetHashKey(obj Hashable) HashKey {
+	return obj.HashKey()
+}
