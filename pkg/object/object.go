@@ -55,6 +55,10 @@ type String struct {
 func (s *String) Type() ObjectType { return STRING_OBJ }
 func (s *String) Inspect() string  { return s.Value }
 
+func NewString(val string) *String {
+	return &String{Value: val}
+}
+
 type Boolean struct {
 	Value bool
 }
