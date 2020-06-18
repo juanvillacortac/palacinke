@@ -16,10 +16,10 @@ type Environment struct {
 func NewEnvironment() *Environment {
 	s := make(map[string]Object)
 	return &Environment{
-		store:    s,
-		outer:    nil,
-		output:   &bytes.Buffer{},
-	// 	Builtins: make(map[string]*Builtin),
+		store:  s,
+		outer:  nil,
+		output: &bytes.Buffer{},
+		// 	Builtins: make(map[string]*Builtin),
 	}
 }
 
