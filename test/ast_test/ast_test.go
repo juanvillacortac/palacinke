@@ -3,8 +3,8 @@ package ast_test
 import (
 	"testing"
 
-	"github.com/juandroid007/palacinke/pkg/ast"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/ast"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 func TestString(t *testing.T) {

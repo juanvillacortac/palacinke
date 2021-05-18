@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/juandroid007/palacinke/pkg/ast"
-	"github.com/juandroid007/palacinke/pkg/parser"
+	"github.com/juanvillacortac/palacinke/pkg/ast"
+	"github.com/juanvillacortac/palacinke/pkg/parser"
 )
 
 func checkParserErrors(t *testing.T, p *parser.Parser) {

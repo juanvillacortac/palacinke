@@ -3,7 +3,7 @@ package eval_test
 import (
 	"testing"
 
-	"github.com/juandroid007/palacinke/pkg/object"
+	"github.com/juanvillacortac/palacinke/pkg/object"
 )
 
 func TestStringLiteral(t *testing.T) {

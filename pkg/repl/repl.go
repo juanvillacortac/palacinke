@@ -6,11 +6,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/juandroid007/palacinke/pkg/ast"
-	"github.com/juandroid007/palacinke/pkg/eval"
-	"github.com/juandroid007/palacinke/pkg/lexer"
-	"github.com/juandroid007/palacinke/pkg/object"
-	"github.com/juandroid007/palacinke/pkg/parser"
+	"github.com/juanvillacortac/palacinke/pkg/ast"
+	"github.com/juanvillacortac/palacinke/pkg/eval"
+	"github.com/juanvillacortac/palacinke/pkg/lexer"
+	"github.com/juanvillacortac/palacinke/pkg/object"
+	"github.com/juanvillacortac/palacinke/pkg/parser"
 
 	"github.com/logrusorgru/aurora"
 )

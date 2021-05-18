@@ -3,8 +3,8 @@ package lexer_test
 import (
 	"testing"
 
-	"github.com/juandroid007/palacinke/pkg/lexer"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/lexer"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 func TestNextToken(t *testing.T) {

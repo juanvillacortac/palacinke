@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/juandroid007/palacinke/pkg/ast"
-	"github.com/juandroid007/palacinke/pkg/lexer"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/ast"
+	"github.com/juanvillacortac/palacinke/pkg/lexer"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 const (

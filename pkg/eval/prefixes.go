@@ -1,8 +1,8 @@
 package eval
 
 import (
-	"github.com/juandroid007/palacinke/pkg/object"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/object"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 func evalBangOperatorExpression(right object.Object) object.Object {

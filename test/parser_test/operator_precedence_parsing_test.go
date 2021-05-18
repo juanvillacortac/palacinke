@@ -3,8 +3,8 @@ package parser_test
 import (
 	"testing"
 
-	"github.com/juandroid007/palacinke/pkg/lexer"
-	"github.com/juandroid007/palacinke/pkg/parser"
+	"github.com/juanvillacortac/palacinke/pkg/lexer"
+	"github.com/juanvillacortac/palacinke/pkg/parser"
 )
 
 func TestOperatorPrecedenceParsing(t *testing.T) {

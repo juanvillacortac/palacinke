@@ -3,8 +3,8 @@ package eval
 import (
 	"fmt"
 
-	"github.com/juandroid007/palacinke/pkg/object"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/object"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 var builtins = map[string]*object.Builtin{

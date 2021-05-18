@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/juandroid007/palacinke/pkg/repl"
+	"github.com/juanvillacortac/palacinke/pkg/repl"
 )
 
-const REPO = "https://github.com/juandroid007/palacinke"
+const REPO = "https://github.com/juanvillacortac/palacinke"
 const ASCII_ART = `               _____________
               /    ___      \
              ||    \__\     ||

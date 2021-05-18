@@ -3,8 +3,8 @@ package parser
 import (
 	"strconv"
 
-	"github.com/juandroid007/palacinke/pkg/ast"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/ast"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 /***** Let statement *********************************************************/

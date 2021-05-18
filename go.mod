@@ -1,4 +1,4 @@
-module github.com/juandroid007/palacinke
+module github.com/juanvillacortac/palacinke
 
 go 1.14
 

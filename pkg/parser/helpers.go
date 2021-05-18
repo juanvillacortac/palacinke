@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 func (p *Parser) currentTokenIs(t token.TokenType) bool {

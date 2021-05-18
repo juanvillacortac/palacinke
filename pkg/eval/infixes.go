@@ -3,8 +3,8 @@ package eval
 import (
 	"math"
 
-	"github.com/juandroid007/palacinke/pkg/object"
-	"github.com/juandroid007/palacinke/pkg/token"
+	"github.com/juanvillacortac/palacinke/pkg/object"
+	"github.com/juanvillacortac/palacinke/pkg/token"
 )
 
 func evalIntegerInfixExpression(

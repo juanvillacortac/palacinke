@@ -2,7 +2,7 @@ GC=go
 
 PROJECT=palacinke
 
-MODULE=github.com/juandroid007/palacinke
+MODULE=github.com/juanvillacortac/palacinke
 
 MAIN_PKG=$(MODULE)/cmd/palacinke
 
